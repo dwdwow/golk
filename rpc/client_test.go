@@ -5,6 +5,15 @@ import (
 	"testing"
 )
 
+func TestGetAccountInfo(t *testing.T) {
+	client := New(os.Getenv("SOL_RPC_HTTP_URL"))
+	info, err := client.GetAccountInfo("9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(info)
+}
+
 func TestGetBalance(t *testing.T) {
 	client := New(os.Getenv("SOL_RPC_HTTP_URL"))
 	balance, err := client.GetBalance("9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM", nil)

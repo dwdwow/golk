@@ -40,27 +40,20 @@ func (r *Resp[D]) FromReader(reader io.Reader) error {
 	return json.NewDecoder(reader).Decode(r)
 }
 
-// =============================== transaction ===============================
+// =============================== getAccountInfo ===============================
 
-type Transaction struct {
-	Signatures []string `json:"signatures"`
+type GetAccountInfoOptions struct {
+	Commitment     Commitment `json:"commitment,omitempty"`
+	Encoding       Encoding   `json:"encoding,omitempty"`
+	DataSlice      string     `json:"dataSlice,omitempty"`
+	MinContextSlot int64      `json:"minContextSlot,omitempty"`
 }
 
-type TxMessage struct {
-	Header          TxMsgHeader `json:"header"`
-	AccountKeys     []string    `json:"accountKeys"`
-	RecentBlockhash string      `json:"recentBlockhash"`
-}
-
-type TxMsgHeader struct {
-	NumRequiredSignatures       int64 `json:"numRequiredSignatures"`
-	NumReadonlySignedAccounts   int64 `json:"numReadonlySignedAccounts"`
-	NumReadonlyUnsignedAccounts int64 `json:"numReadonlyUnsignedAccounts"`
-}
-
-type Instruction struct {
-	ProgramID string `json:"programId"`
-	Data      string `json:"data"`
+type GetAccountInfoResult struct {
+	Context struct {
+		Slot int64 `json:"slot"`
+	} `json:"context"`
+	Value AccountInfo `json:"value"`
 }
 
 // =============================== getBalance ===============================

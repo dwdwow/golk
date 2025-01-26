@@ -27,6 +27,10 @@ func New(endpoint string) *Client {
 	return clt
 }
 
+func (c *Client) GetAccountInfo(address string, opts *GetAccountInfoOptions) (*GetAccountInfoResult, error) {
+	return Post[*GetAccountInfoResult](context.Background(), c, "getAccountInfo", address, opts)
+}
+
 func (c *Client) GetBalance(address string, opts *GetBalanceOptions) (*GetBalanceResult, error) {
 	return Post[*GetBalanceResult](context.Background(), c, "getBalance", address, opts)
 }
