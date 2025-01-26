@@ -16,12 +16,15 @@ func DefaultPostErrHandler(statusCode int, body []byte, err error) error {
 }
 
 func Post[D any](ctx context.Context, client *Client, rpcMethod string, params ...any) (D, error) {
-	if len(params) == 2 {
-		if reflect.ValueOf(params[1]).IsNil() {
-			params = params[:1]
+	var _params []any
+	for _, param := range params {
+		val := reflect.ValueOf(param)
+		if val.Kind() == reflect.Ptr && val.IsNil() {
+			continue
 		}
+		_params = append(_params, val.Interface())
 	}
-	reqData := NewReqData(rpcMethod, params...)
+	reqData := NewReqData(rpcMethod, _params...)
 	if client.Limiter != nil {
 		client.Limiter.Wait(ctx)
 	}
