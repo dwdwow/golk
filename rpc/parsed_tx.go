@@ -1,5 +1,10 @@
 package rpc
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 type ParsedMessageAccount struct {
 	PublicKey string `json:"pubkey"`
 	Signer    bool   `json:"signer"`
@@ -7,8 +12,48 @@ type ParsedMessageAccount struct {
 }
 
 type ParsedInstructionInfo struct {
+	// sometimes, no info, just return a string
+	Data            *string        `json:"data"`
 	Info            map[string]any `json:"info"`
 	InstructionType string         `json:"type"`
+}
+
+func (pi ParsedInstructionInfo) MarshalJSON() ([]byte, error) {
+	if pi.Data != nil {
+		return json.Marshal(pi.Data)
+	}
+	return json.Marshal(pi.Info)
+}
+
+func (pi *ParsedInstructionInfo) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || (len(data) == 4 && string(data) == "null") {
+		// TODO: is this an error?
+		return nil
+	}
+
+	firstChar := data[0]
+
+	switch firstChar {
+	// Check if first character is `[`, standing for a JSON array.
+	case '"':
+		// It's base64 (or similar)
+		{
+			pi.Data = new(string)
+			err := json.Unmarshal(data, pi.Data)
+			if err != nil {
+				return err
+			}
+		}
+	case '{':
+		// It's JSON, most likely.
+		{
+			return json.Unmarshal(data, &pi.Info)
+		}
+	default:
+		return fmt.Errorf("golk: unmarshal parsed instruction info failed, unknown kind: %v", data)
+	}
+
+	return nil
 }
 
 type ParsedInstruction struct {
@@ -100,4 +145,3 @@ type BlockReward struct {
 	// only present for voting and staking rewards.
 	Commission *uint8 `json:"commission,omitempty"`
 }
-

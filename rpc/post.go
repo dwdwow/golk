@@ -51,8 +51,6 @@ func Post[D any](ctx context.Context, client *Client, rpcMethod string, params .
 		return *new(D), client.PostErrHandler(statusCode, body, nil)
 	}
 	respData := &Resp[D]{}
-	bo, _ := io.ReadAll(resp.Body)
-	println(string(bo))
 	if err := respData.FromReader(resp.Body); err != nil {
 		if errors.Is(err, io.EOF) {
 			return *new(D), client.PostErrHandler(statusCode, nil, err)

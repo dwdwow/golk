@@ -20,7 +20,7 @@ func TestGetParsedBlock(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(block)
+	t.Log("block tx count:", len(block.Transactions))
 }
 
 func TestGetParsedTransaction(t *testing.T) {
